@@ -15,7 +15,8 @@
             width: 600px;
             position: absolute;
             left: 0;
-            top: 400px;
+            top: 50%;
+            transform: translateY(-50%); /* Center vertically */
         }
 
         #image {
@@ -37,9 +38,9 @@
         <p>
     </form>
 
-    <div id="meme_container" style="position: relative;">
+    <div id="meme_container" style="position: relative; width: 600px; height: 500px;">
         <div id="meme_text">&nbsp;</div>
-        <img id="image" src="" alt="Meme Image">
+        <img id="image" src="" alt="Meme Image" style="position: absolute; top: 0; left: 0; width: 600px; height: 500px;">
     </div>
     
     <canvas id="canvas" width="600" height="500"></canvas>
@@ -76,11 +77,11 @@
             context.font = "40px Impact";
             context.fillStyle = "white";
             context.textAlign = "center";
-            context.textBaseline = "bottom";
-            context.fillText(text, canvas.width / 2, canvas.height - 50);
+            context.textBaseline = "middle"; // Center the text vertically
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
             context.lineWidth = 3;
             context.strokeStyle = "black";
-            context.strokeText(text, canvas.width / 2, canvas.height - 50);
+            context.strokeText(text, canvas.width / 2, canvas.height / 2);
             
             // Convert the canvas to an image and download
             var link = document.createElement("a");
