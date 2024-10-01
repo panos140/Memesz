@@ -5,27 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Generator</title>
     <style>
-        #meme_text {
-            background-color: transparent;
-            font-size: 40px;
-            font-family: "Impact";
-            color: white;
-            text-shadow: black 0px 0px 10px;
-            text-align: center;
-            width: 600px;
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%); /* Center vertically */
-        }
-
         #image {
             width: 600px;
             border: 3px solid #000000;
         }
 
+        #meme_container {
+            position: relative;
+            display: inline-block;
+        }
+
         canvas {
-            display: none;
+            display: block;
         }
     </style>
 </head>
@@ -38,52 +29,55 @@
         <p>
     </form>
 
-    <div id="meme_container" style="position: relative; width: 600px; height: 500px;">
-        <div id="meme_text">&nbsp;</div>
-        <img id="image" src="" alt="Meme Image" style="position: absolute; top: 0; left: 0; width: 600px; height: 500px;">
+    <div id="meme_container">
+        <canvas id="canvas" width="600" height="500"></canvas>
     </div>
-    
-    <canvas id="canvas" width="600" height="500"></canvas>
     
     <button onclick="download_meme()">Download Meme</button>
 
     <script>
-        // Update image onto the screen
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+        var img = new Image();
+
+        // Update image onto the canvas
         function update_image() {
-            var img = document.querySelector('#image'); // Access the image element
             var file = document.querySelector('input[type=file]').files[0]; // Access the selected file
             img.src = window.URL.createObjectURL(file); // Set the image source to the selected file
+
+            img.onload = function() {
+                // Draw image to the canvas when loaded
+                context.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas first
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.drawImage(img, 0, 0, img.width, img.height);
+                update_text(); // Redraw the text when the image changes
+            };
         }
 
         // Write the text onto the meme
         function update_text() {
             var user_text = document.getElementById("user_text").value; // Get the text from the input field
-            var meme_text = document.getElementById("meme_text"); // Get the meme text element
-            meme_text.innerHTML = user_text; // Set the meme text to the input value
+            if (img.complete) { // Only update the text if the image has already loaded
+                context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
+                context.drawImage(img, 0, 0, canvas.width, canvas.height); // Redraw the image
+
+                // Set up text properties
+                context.font = "40px Impact";
+                context.fillStyle = "white";
+                context.textAlign = "center";
+                context.textBaseline = "bottom"; // Align text to the bottom
+
+                // Add text with padding at the bottom
+                context.fillText(user_text, canvas.width / 2, canvas.height - 20);
+                context.strokeStyle = "black";
+                context.lineWidth = 4;
+                context.strokeText(user_text, canvas.width / 2, canvas.height - 20);
+            }
         }
 
         // Combine image and text onto a canvas and download
         function download_meme() {
-            var canvas = document.getElementById("canvas");
-            var context = canvas.getContext("2d");
-            var img = document.getElementById("image");
-            var text = document.getElementById("user_text").value;
-            
-            // Draw the image on the canvas
-            context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            // Add the text on top of the image
-            context.font = "40px Impact";
-            context.fillStyle = "white";
-            context.textAlign = "center";
-            context.textBaseline = "middle"; // Center the text vertically
-            context.fillText(text, canvas.width / 2, canvas.height / 2);
-            context.lineWidth = 3;
-            context.strokeStyle = "black";
-            context.strokeText(text, canvas.width / 2, canvas.height / 2);
-            
-            // Convert the canvas to an image and download
             var link = document.createElement("a");
             link.href = canvas.toDataURL("image/png");
             link.download = "meme.png";
