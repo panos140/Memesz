@@ -27,7 +27,9 @@
     <form>
         <p>Select a picture: <input type="file" id="user_picture" onchange="update_image()"></p>
         <p>Top text: <input type="text" id="top_text" oninput="update_text()" maxlength="70"></p>
+        <p>Top text size: <input type="range" id="top_text_size" min="10" max="100" value="30" oninput="update_text()"> <span id="top_text_size_value">30</span>px</p>
         <p>Bottom text: <input type="text" id="bottom_text" oninput="update_text()" maxlength="70"></p>
+        <p>Bottom text size: <input type="range" id="bottom_text_size" min="10" max="100" value="30" oninput="update_text()"> <span id="bottom_text_size_value">30</span>px</p>
     </form>
 
     <div id="meme_container">
@@ -82,13 +84,19 @@
         function update_text() {
             const top_text = document.getElementById("top_text").value; // Get the top text
             const bottom_text = document.getElementById("bottom_text").value; // Get the bottom text
+            const top_text_size = document.getElementById("top_text_size").value; // Get top text size
+            const bottom_text_size = document.getElementById("bottom_text_size").value; // Get bottom text size
+
+            // Update text size values on the UI
+            document.getElementById("top_text_size_value").textContent = top_text_size;
+            document.getElementById("bottom_text_size_value").textContent = bottom_text_size;
 
             if (img.complete) { // Only update the text if the image has already loaded
                 context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
                 context.drawImage(img, 0, 0, canvas.width, canvas.height); // Redraw the image
 
-                // Set up text properties
-                context.font = "30px Impact";
+                // Set up text properties for top text
+                context.font = `${top_text_size}px Impact`;
                 context.fillStyle = "white";
                 context.textAlign = "center";
                 context.lineWidth = 4;
@@ -100,6 +108,9 @@
                     context.fillText(top_text, canvas.width / 2, 10);
                     context.strokeText(top_text, canvas.width / 2, 10);
                 }
+
+                // Set up text properties for bottom text
+                context.font = `${bottom_text_size}px Impact`;
 
                 // Draw the bottom text
                 if (bottom_text) {
@@ -114,7 +125,7 @@
         function download_meme() {
             const link = document.createElement("a");
             link.href = canvas.toDataURL("image/png");
-            link.download = "meme-output.png";
+            link.download = "memesz-output.png";
             link.click();
         }
     </script>
