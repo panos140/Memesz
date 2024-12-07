@@ -23,10 +23,9 @@
 <body>
 
     <form>
-        Select a picture: <input type="file" id="user_picture" onchange="update_image()">
-        <p>
-        Meme text: <input type="text" id="user_text" oninput="update_text()" maxlength="70">
-        <p>
+        <p>Select a picture: <input type="file" id="user_picture" onchange="update_image()"></p>
+        <p>Top text: <input type="text" id="top_text" oninput="update_text()" maxlength="70"></p>
+        <p>Bottom text: <input type="text" id="bottom_text" oninput="update_text()" maxlength="70"></p>
     </form>
 
     <div id="meme_container">
@@ -57,7 +56,9 @@
 
         // Write the text onto the meme
         function update_text() {
-            var user_text = document.getElementById("user_text").value; // Get the text from the input field
+            var top_text = document.getElementById("top_text").value; // Get the top text
+            var bottom_text = document.getElementById("bottom_text").value; // Get the bottom text
+
             if (img.complete) { // Only update the text if the image has already loaded
                 context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
                 context.drawImage(img, 0, 0, canvas.width, canvas.height); // Redraw the image
@@ -66,13 +67,22 @@
                 context.font = "40px Impact";
                 context.fillStyle = "white";
                 context.textAlign = "center";
-                context.textBaseline = "bottom"; // Align text to the bottom
-
-                // Add text with padding at the bottom
-                context.fillText(user_text, canvas.width / 2, canvas.height - 20);
-                context.strokeStyle = "black";
                 context.lineWidth = 4;
-                context.strokeText(user_text, canvas.width / 2, canvas.height - 20);
+                context.strokeStyle = "black";
+
+                // Draw the top text
+                if (top_text) {
+                    context.textBaseline = "top"; // Align text to the top
+                    context.fillText(top_text, canvas.width / 2, 10);
+                    context.strokeText(top_text, canvas.width / 2, 10);
+                }
+
+                // Draw the bottom text
+                if (bottom_text) {
+                    context.textBaseline = "bottom"; // Align text to the bottom
+                    context.fillText(bottom_text, canvas.width / 2, canvas.height - 10);
+                    context.strokeText(bottom_text, canvas.width / 2, canvas.height - 10);
+                }
             }
         }
 
@@ -80,7 +90,7 @@
         function download_meme() {
             var link = document.createElement("a");
             link.href = canvas.toDataURL("image/png");
-            link.download = "meme.png";
+            link.download = "meme-output.png";
             link.click();
         }
     </script>
